@@ -16,6 +16,9 @@
         :theme="getHeaderTheme"
         :sider="false"
       />
+      <span class="text-#000 ml-[16px] mr-[16px]" v-if="!getShowMenu">
+        鸿道边缘管理系统 ( 节点：节点 )
+      </span>
       <LayoutBreadcrumb v-if="getShowContent && getShowBread" :theme="getHeaderTheme" />
     </div>
     <!-- left end -->
@@ -41,12 +44,12 @@
 
       <FullScreen v-if="getShowFullScreen" :class="`${prefixCls}-action__item fullscreen-item`" />
 
-      <AppLocalePicker
+      <!-- <AppLocalePicker
         v-if="getShowLocalePicker"
         :reload="true"
         :showText="false"
         :class="`${prefixCls}-action__item`"
-      />
+      /> -->
 
       <UserDropDown :theme="getHeaderTheme" />
 
@@ -57,8 +60,8 @@
 <script lang="ts" setup>
   import { Layout } from 'ant-design-vue';
   import { computed, unref } from 'vue';
-
-  import { AppLocalePicker, AppLogo, AppSearch } from '@/components/Application';
+  // AppLocalePicker
+  import { AppLogo, AppSearch } from '@/components/Application';
   import { SettingButtonPositionEnum } from '@/enums/appEnum';
   import { MenuModeEnum, MenuSplitTyeEnum } from '@/enums/menuEnum';
   import { useHeaderSetting } from '@/hooks/setting/useHeaderSetting';
@@ -98,6 +101,7 @@
     getShowFullScreen,
     getShowNotice,
     getShowContent,
+    getShowMenu,
     getShowBread,
     getShowHeaderLogo,
     getShowHeader,

@@ -1,9 +1,9 @@
-/**
- * @description: Login interface parameters
- */
 export interface LoginParams {
-  username: string;
+  account: string;
   password: string;
+  captchaCode: string;
+  type: number;
+  verifyUUID: string;
 }
 
 export interface RoleInfo {
@@ -11,28 +11,53 @@ export interface RoleInfo {
   value: string;
 }
 
+export interface GetPermCode {
+  img: string;
+  uuid: string;
+  expire: number;
+}
+
 /**
  * @description: Login interface return value
  */
 export interface LoginResultModel {
-  userId: string | number;
   token: string;
-  roles: RoleInfo[];
+  account: string;
+  avatar: string;
+  createTime: string;
+  mail: string;
+  nickName: string;
+  phone: string;
+  type: null | any;
+  uid: string;
+}
+
+/**
+ * @description: Login interface return value
+ */
+export interface ResultUserInfoModel {
+  account: string;
+  avatar: string;
+  company: string;
+  createTime: string;
+  dept: string;
+  mail: string;
+  nickName: string;
+  phone: string;
+  position: string;
+  uid?: string | number;
 }
 
 /**
  * @description: Get user information return value
  */
 export interface GetUserInfoModel {
-  roles: RoleInfo[];
   // 用户id
-  userId: string | number;
+  uid?: string | number;
   // 用户名
-  username: string;
+  account: string;
   // 真实名字
-  realName: string;
+  nickName: string;
   // 头像
   avatar: string;
-  // 介绍
-  desc?: string;
 }

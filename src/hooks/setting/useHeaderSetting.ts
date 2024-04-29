@@ -66,6 +66,8 @@ export function useHeaderSetting() {
 
   const getShowNotice = computed(() => appStore.getHeaderSetting.showNotice);
 
+  const getShowMenu = computed(() => appStore.getMenuSetting.show);
+
   const getShowBread = computed(() => {
     return (
       unref(getMenuMode) !== MenuModeEnum.HORIZONTAL && unref(getShowBreadCrumb) && !unref(getSplit)
@@ -104,5 +106,7 @@ export function useHeaderSetting() {
     getShowInsetHeaderRef,
     getUnFixedAndFull,
     getHeaderBgColor,
+
+    getShowMenu,
   };
 }

@@ -139,6 +139,10 @@ export interface ProjectConfig {
 }
 
 export interface GlobConfig {
+  // 获取api配置地址接口
+  get_config_api: string;
+  // 获取的基础接口
+  base_login_api: string;
   // Site title
   title: string;
   // Service interface url
@@ -151,6 +155,7 @@ export interface GlobConfig {
   shortName: string;
 }
 export interface GlobEnvConfig {
+  VITE_GLOB_CONFIG_API: string;
   // Site title
   VITE_GLOB_APP_TITLE: string;
   // Service interface url

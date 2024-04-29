@@ -73,6 +73,7 @@
     "registerButton": "Sign up",
     "rememberMe": "Remember me",
     "forgetPassword": "Forget Password?",
+    "verificationCode": "Verification Code",
     "otherSignIn": "Sign in with",
     "loginSuccessTitle": "Login successful",
     "loginSuccessDesc": "Welcome back",

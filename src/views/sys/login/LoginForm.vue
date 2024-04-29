@@ -25,6 +25,19 @@
       />
     </FormItem>
 
+    <FormItem name="captchaCode" class="enter-x">
+      <Input
+        v-model:value="formData.captchaCode"
+        size="large"
+        class="captchaCode"
+        :placeholder="t('sys.login.verificationCode')"
+      >
+        <template #addonAfter>
+          <img :src="codeUrl" alt="图形验证码" title="看不清，换一张" @click="getCode" />
+        </template>
+      </Input>
+    </FormItem>
+
     <ARow class="enter-x">
       <ACol :span="12">
         <FormItem>
@@ -32,14 +45,6 @@
           <Checkbox v-model:checked="rememberMe" size="small">
             {{ t('sys.login.rememberMe') }}
           </Checkbox>
-        </FormItem>
-      </ACol>
-      <ACol :span="12">
-        <FormItem :style="{ 'text-align': 'right' }">
-          <!-- No logic, you need to deal with it yourself -->
-          <Button type="link" size="small" @click="setLoginState(LoginStateEnum.RESET_PASSWORD)">
-            {{ t('sys.login.forgetPassword') }}
-          </Button>
         </FormItem>
       </ACol>
     </ARow>
@@ -52,46 +57,12 @@
         {{ t('sys.login.registerButton') }}
       </Button> -->
     </FormItem>
-    <ARow class="enter-x" :gutter="[16, 16]">
-      <ACol :md="8" :xs="24">
-        <Button block @click="setLoginState(LoginStateEnum.MOBILE)">
-          {{ t('sys.login.mobileSignInFormTitle') }}
-        </Button>
-      </ACol>
-      <ACol :md="8" :xs="24">
-        <Button block @click="setLoginState(LoginStateEnum.QR_CODE)">
-          {{ t('sys.login.qrSignInFormTitle') }}
-        </Button>
-      </ACol>
-      <ACol :md="8" :xs="24">
-        <Button block @click="setLoginState(LoginStateEnum.REGISTER)">
-          {{ t('sys.login.registerButton') }}
-        </Button>
-      </ACol>
-    </ARow>
-
-    <Divider class="enter-x">{{ t('sys.login.otherSignIn') }}</Divider>
-
-    <div class="flex justify-evenly enter-x" :class="`${prefixCls}-sign-in-way`">
-      <GithubFilled />
-      <WechatFilled />
-      <AlipayCircleFilled />
-      <GoogleCircleFilled />
-      <TwitterCircleFilled />
-    </div>
   </Form>
 </template>
 <script lang="ts" setup>
   import { reactive, ref, unref, computed } from 'vue';
-
-  import { Checkbox, Form, Input, Row, Col, Button, Divider } from 'ant-design-vue';
-  import {
-    GithubFilled,
-    WechatFilled,
-    AlipayCircleFilled,
-    GoogleCircleFilled,
-    TwitterCircleFilled,
-  } from '@ant-design/icons-vue';
+  import { getPermCode } from '@/api/sys/user';
+  import { Checkbox, Form, Input, Row, Col, Button } from 'ant-design-vue';
   import LoginFormTitle from './LoginFormTitle.vue';
 
   import { useI18n } from '@/hooks/web/useI18n';
@@ -100,7 +71,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { LoginStateEnum, useLoginState, useFormRules, useFormValid } from './useLogin';
   import { useDesign } from '@/hooks/web/useDesign';
-  //import { onKeyStroke } from '@vueuse/core';
+  import { HashingFactory } from '@/utils/cipher';
 
   const ACol = Col;
   const ARow = Row;
@@ -111,7 +82,7 @@
   const { prefixCls } = useDesign('login');
   const userStore = useUserStore();
 
-  const { setLoginState, getLoginState } = useLoginState();
+  const { getLoginState } = useLoginState();
   const { getFormRules } = useFormRules();
 
   const formRef = ref();
@@ -119,30 +90,43 @@
   const rememberMe = ref(false);
 
   const formData = reactive({
-    account: 'vben',
-    password: '123456',
+    account: '',
+    password: '',
+    captchaCode: '',
+    verifyUUID: '',
   });
 
   const { validForm } = useFormValid(formRef);
 
-  //onKeyStroke('Enter', handleLogin);
-
   const getShow = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN);
+
+  const encrypt: (string) => string = (password: string) => {
+    const md5 = HashingFactory.createMD5Hashing();
+    const md5Password = md5.hash(password);
+    const list = md5Password.split('');
+    if (list && list?.length) {
+      [list[8], list[16], list[18], list[21]] = [list[16], list[8], list[21], list[18]];
+    }
+    return list.join('');
+  };
 
   async function handleLogin() {
     const data = await validForm();
     if (!data) return;
     try {
       loading.value = true;
+      const password = encrypt(data.password);
       const userInfo = await userStore.login({
-        password: data.password,
-        username: data.account,
-        mode: 'none', //不要默认的错误提示
+        password: password,
+        account: data.account,
+        captchaCode: data.captchaCode,
+        verifyUUID: formData.verifyUUID,
+        type: 2,
       });
       if (userInfo) {
         notification.success({
           message: t('sys.login.loginSuccessTitle'),
-          description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.realName}`,
+          description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.nickName ? userInfo.nickName : userInfo.account}`,
           duration: 3,
         });
       }
@@ -156,4 +140,20 @@
       loading.value = false;
     }
   }
+
+  // 获取验证码
+  const codeUrl = ref('');
+  const getCode = async () => {
+    const { img, uuid } = await getPermCode();
+    formData.verifyUUID = uuid;
+    codeUrl.value = 'data:image/gif;base64,' + img;
+  };
+  getCode();
 </script>
+<style lang="scss" scoped>
+  :deep(.captchaCode) {
+    .ant-input-group-addon {
+      padding: 0;
+    }
+  }
+</style>

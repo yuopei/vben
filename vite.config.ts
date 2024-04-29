@@ -17,7 +17,7 @@ export default defineApplicationConfig({
     server: {
       proxy: {
         '/basic-api': {
-          target: 'http://localhost:3000',
+          target: 'http://192.168.60.233:8050',
           changeOrigin: true,
           ws: true,
           rewrite: (path) => path.replace(new RegExp(`^/basic-api`), ''),

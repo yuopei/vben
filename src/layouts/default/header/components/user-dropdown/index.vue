@@ -1,7 +1,8 @@
 <template>
   <Dropdown placement="bottomLeft" :overlayClassName="`${prefixCls}-dropdown-overlay`">
     <span :class="[prefixCls, `${prefixCls}--${theme}`]" class="flex">
-      <img :class="`${prefixCls}__header`" :src="getUserInfo.avatar" />
+      <!-- <img :class="`${prefixCls}__header`" :src="getUserInfo.avatar" /> -->
+      <span :class="`${prefixCls}__name hidden md:block`">你好，</span>
       <span :class="`${prefixCls}__info hidden md:block`">
         <span :class="`${prefixCls}__name`" class="truncate">
           {{ getUserInfo.realName }}
@@ -11,19 +12,19 @@
 
     <template #overlay>
       <Menu @click="handleMenuClick">
-        <MenuItem
+        <!-- <MenuItem
           key="doc"
           :text="t('layout.header.dropdownItemDoc')"
           icon="ion:document-text-outline"
           v-if="getShowDoc"
         />
-        <Menu.Divider v-if="getShowDoc" />
-        <MenuItem
+        <Menu.Divider v-if="getShowDoc" /> -->
+        <!-- <MenuItem
           v-if="getShowApi"
           key="api"
           :text="t('layout.header.dropdownChangeApi')"
           icon="ant-design:swap-outlined"
-        />
+        /> -->
         <MenuItem
           v-if="getUseLockPage"
           key="lock"
@@ -70,11 +71,11 @@
 
   const { prefixCls } = useDesign('header-user-dropdown');
   const { t } = useI18n();
-  const { getShowDoc, getUseLockPage, getShowApi } = useHeaderSetting();
+  const { getUseLockPage } = useHeaderSetting();
   const userStore = useUserStore();
 
   const getUserInfo = computed(() => {
-    const { realName = '', avatar, desc } = userStore.getUserInfo || {};
+    const { nickName: realName = '', avatar, dept: desc } = userStore.getUserInfo || {};
     return { realName, avatar: avatar || headerImg, desc };
   });
 

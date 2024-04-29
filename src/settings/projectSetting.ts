@@ -95,7 +95,7 @@ const setting: ProjectConfig = {
     // Only limited to the opening of the left menu, the mouse has a drag bar on the right side of the menu
     canDrag: false,
     // Whether to show no dom
-    show: true,
+    show: false,
     // Whether to show dom
     hidden: false,
     // Menu width

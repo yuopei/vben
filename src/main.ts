@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import 'uno.css';
 import '@/design/index.less';
 import '@/components/VxeTable/src/css/index.scss';
@@ -15,10 +16,14 @@ import { initAppConfigStore } from '@/logics/initAppConfig';
 import { router, setupRouter } from '@/router';
 import { setupRouterGuard } from '@/router/guard';
 import { setupStore } from '@/store';
-
+import { getConfigApi } from '@/api/sys/user';
 import App from './App.vue';
 
 async function bootstrap() {
+  // 获取ip config
+  const data = await getConfigApi();
+  (window as any).base_login_api = data;
+
   const app = createApp(App);
 
   // Configure store
